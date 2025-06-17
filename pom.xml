@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>geektrust</artifactId>
+    <version>1.0</version>
+
+    <properties>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+
+        <!--
+            Set these properties to your desired Java version (Java 21 in your case).
+            The maven-compiler-plugin configuration below will also use these.
+            Keeping them consistent helps avoid confusion.
+        -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>21</java.version> <!-- Align with your JDK version -->
+        <junit.jupiter.version>5.10.0</junit.jupiter.version> <!-- Updated for Java 21 compatibility -->
+        <jacoco.version>0.8.11</jacoco.version> <!-- Updated for Java 21 compatibility -->
+        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version> <!-- Updated for Java 21 and JUnit 5.10.0 -->
+    </properties>
+
+    <dependencies>
+        <!-- JUnit Jupiter API for writing tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- JUnit Jupiter Engine for running tests -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--
+            While 'junit-platform-surefire-provider' was suggested before,
+            with modern Surefire versions (3.x.x), it's often not needed as an explicit dependency
+            within the plugin's <dependencies> or even the project's main <dependencies>
+            if 'junit-jupiter-engine' is present. Maven Surefire Plugin 3.x.x has built-in
+            support for JUnit Platform.
+
+            Keeping the <junit-platform-surefire-provider> dependency can sometimes be useful
+            for older Surefire versions or specific configurations, but for typical JUnit 5 + Surefire 3.x.x,
+            it's often redundant. I'm removing it from the project dependencies for simplicity
+            and to rely on Surefire's auto-detection.
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Assembly Plugin to create a single executable JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version> <!-- Updated to a more recent version -->
+                <configuration>
+                    <finalName>geektrust</finalName>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <!-- CORRECTED: This should point to your Main class, not the service class -->
+                            <mainClass>com.example.geektrust.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven Surefire Plugin for running unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <!--
+                    The junit-platform-surefire-provider and junit-jupiter-engine
+                    dependencies are typically NOT needed here if you have
+                    junit-jupiter-engine as a direct dependency in your
+                    project's <dependencies> section and are using Surefire 3.x.x.
+                    Surefire 3.x.x has built-in support for JUnit 5.
+                -->
+            </plugin>
+
+            <!-- JaCoCo Code Coverage Plugin -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version> <!-- Now uses the property defined above -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <formats><format>XML</format></formats>
+                            <outputDirectory>./</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven Compiler Plugin for compiling Java source code -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <!-- These now correctly point to Java 21, overriding the old properties -->
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
